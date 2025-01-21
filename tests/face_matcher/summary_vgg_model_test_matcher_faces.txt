@@ -1,0 +1,17 @@
+Test Results: vgg_model_test_matcher_faces
+face matcher correct: 4
+face matcher incorrect: 7
+execution time: 15.264 seconds
+Image Results:
+1.png vs 01.jpg: coincidence=False, distance=0.7300851226469198
+10.jpg vs 02.jpg: coincidence=True, distance=0.6638714534616617
+11.jpg vs 03.jpg: coincidence=True, distance=0.5031149499316416
+2.jpg vs 04.jpg: coincidence=True, distance=0.6597790465341544
+3.jpg vs 05.jpg: coincidence=False, distance=0.8033228333808309
+4.jpg vs 06.jpg: coincidence=False, distance=0.703458022491904
+5.jpg vs 07.jpg: coincidence=False, distance=0.6944296479435237
+6.jpg vs 08.jpg: coincidence=True, distance=0.5735204825534732
+7.jpg vs 09.jpg: coincidence=False, distance=0.8698288606581805
+8.jpg vs 10_.jpg: coincidence=False, distance=0.8809494305588811
+9.jpg vs 11_.jpg: coincidence=False, distance=0.9240585630503392
+Mean distance: 0.7278562193828645

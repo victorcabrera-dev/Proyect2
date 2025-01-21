@@ -1,0 +1,17 @@
+Test Results: arcface_model_test_not_matcher_faces
+face matcher correct: 11
+face matcher incorrect: 0
+execution time: 10.063 seconds
+Image Results:
+1.jpg vs 1.jpg: coincidence=False, distance=0.7191786428956906
+10.jpg vs 10.jpg: coincidence=False, distance=0.8967526353316859
+11.jpg vs 11.jpg: coincidence=False, distance=0.8972628383322805
+2.jpg vs 2.jpg: coincidence=False, distance=0.8459721137830324
+3.jpg vs 3.jpg: coincidence=False, distance=0.7993848130421128
+4.jpg vs 4.jpg: coincidence=False, distance=0.8404845817963278
+5.jpg vs 5.jpg: coincidence=False, distance=0.8829800923761817
+6.jpg vs 6.jpg: coincidence=False, distance=0.8715162688936136
+7.jpg vs 7.jpg: coincidence=False, distance=0.8613328648352656
+8.jpg vs 8.jpg: coincidence=False, distance=0.8705652957538105
+9.jpg vs 9.jpg: coincidence=False, distance=0.8625342265006453
+Mean distance: 0.8498149430491498

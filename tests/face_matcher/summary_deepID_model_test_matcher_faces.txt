@@ -1,0 +1,17 @@
+Test Results: deepID_model_test_matcher_faces
+face matcher correct: 9
+face matcher incorrect: 2
+execution time: 14.357 seconds
+Image Results:
+1.png vs 01.jpg: coincidence=True, distance=0.6185194526901052
+10.jpg vs 02.jpg: coincidence=True, distance=0.48791967366935196
+11.jpg vs 03.jpg: coincidence=True, distance=0.3823309915176283
+2.jpg vs 04.jpg: coincidence=True, distance=0.4968625934942841
+3.jpg vs 05.jpg: coincidence=True, distance=0.5595152442689149
+4.jpg vs 06.jpg: coincidence=True, distance=0.5089601252794445
+5.jpg vs 07.jpg: coincidence=True, distance=0.46690897359643146
+6.jpg vs 08.jpg: coincidence=True, distance=0.37913976627361723
+7.jpg vs 09.jpg: coincidence=False, distance=0.6987138829751188
+8.jpg vs 10_.jpg: coincidence=True, distance=0.5601380382963776
+9.jpg vs 11_.jpg: coincidence=False, distance=0.7577127279629234
+Mean distance: 0.5378837700021998

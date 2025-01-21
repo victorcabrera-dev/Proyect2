@@ -1,0 +1,17 @@
+Test Results: face_recognition_model_test_matcher_faces
+face matcher correct: 3
+face matcher incorrect: 8
+execution time: 9.023 seconds
+Image Results:
+1.png vs 01.jpg: coincidence=False, distance=0.6591987429410655
+10.jpg vs 02.jpg: coincidence=False, distance=0.6047555251608806
+11.jpg vs 03.jpg: coincidence=True, distance=0.48658450810341725
+2.jpg vs 04.jpg: coincidence=False, distance=0.7436733510325447
+3.jpg vs 05.jpg: coincidence=True, distance=0.5412705236739569
+4.jpg vs 06.jpg: coincidence=False, distance=0.6548434819276782
+5.jpg vs 07.jpg: coincidence=False, distance=0.5514256109887503
+6.jpg vs 08.jpg: coincidence=False, distance=0.6434839153125615
+7.jpg vs 09.jpg: coincidence=False, distance=0.5765017555635082
+8.jpg vs 10_.jpg: coincidence=True, distance=0.4766101548941409
+9.jpg vs 11_.jpg: coincidence=False, distance=0.7228704660040857
+Mean distance: 0.6055652759638718
