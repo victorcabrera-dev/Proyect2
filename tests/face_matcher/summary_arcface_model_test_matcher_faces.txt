@@ -1,7 +1,7 @@
 Test Results: arcface_model_test_matcher_faces
 face matcher correct: 9
 face matcher incorrect: 2
-execution time: 14.357 seconds
+execution time: 15.855 seconds
 Image Results:
 1.png vs 01.jpg: coincidence=True, distance=0.6185194526901052
 10.jpg vs 02.jpg: coincidence=True, distance=0.48791967366935196
