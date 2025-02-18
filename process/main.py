@@ -10,6 +10,7 @@ import cv2
 from datetime import datetime
 import pyodbc
 from tkinter import messagebox
+import pyttsx3
 from PIL.ImageOps import expand
 from fontTools.afmLib import writelines
 from jax.experimental.export import export
@@ -46,7 +47,13 @@ class GraphicalUserInterface:
         #self.main_window.resizable(False, False) #Desavilitar el boton de maximizar
         self.frame = CustomFrame(self.main_window)
 
-        # Variable de control para evitar múltiples ventanas de mensaje--------------------BORRAR CUANDO HAYA PUERTA
+        #PARA EL AUDIO
+        # Inicializar pyttsx3 para texto a voz
+        self.speaker = pyttsx3.init()
+        self.speaker.setProperty('rate', 150)  # Controla la velocidad del habla (más alto = más rápido)
+        self.speaker.setProperty('volume', 1)  # Ajusta el volumen (0.0 a 1.0)
+
+        # Variable de control para evitar múltiples ventanas de mensaje y audio--------------------BORRAR CUANDO HAYA PUERTA
         self.message_shown = False
 
         #DB_SQL CONEC
@@ -65,7 +72,7 @@ class GraphicalUserInterface:
             self.conn = None  # Aseguramos que self.conn sea None si ocurre un error
 
         #VIDEO CAPTURA , CONFIG STREAM
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(1)
         self.cap.set(3 , 1280)
         self.cap.set(4 , 720)
 
@@ -101,14 +108,18 @@ class GraphicalUserInterface:
         self.face_login.__init__()
         self.face_login_window.destroy()
         self.login_video.destroy()
-        self.message_shown = False  # Reinicia la variable de control cuando se cierra el login------BORRAR CUANDO HAYA PUERTA
+        self.message_shown = False  # Reinicia la variable de control de audio y mesagebox cuando se cierra el login------BORRAR CUANDO HAYA PUERTA
 
     # SESION 04
+
+    def speak(self, text):
+        """Función para convertir texto en voz"""
+        self.speaker.say(text)
+        self.speaker.runAndWait()
 
     def facial_login(self):
             if self.cap:
                 ret, frame_bgr = self.cap.read()
-
                 if ret:
                     frame = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
                     # process
@@ -117,19 +128,20 @@ class GraphicalUserInterface:
                     frame = imutils.resize(frame, width=1280)
                     im = Image.fromarray(frame)
                     img = ImageTk.PhotoImage(image=im)
-
                     # show video
                     self.login_video.configure(image=img)
                     self.login_video.image = img
                     self.login_video.after(10, self.facial_login)
 
-                    #AGREGADO POR VICTOR PARA MOSTRAR VENTANA EMERGENTE SI-----BORRAR CUANDO HAYA PUERTA
+                    #AGREGADO POR VICTOR PARA MOSTRAR VENTANA EMERGENTE y audio-----BORRAR CUANDO HAYA PUERTA
                     if user_access and not self.message_shown:  # Verifica si el mensaje ya fue mostrado
                         self.message_shown = True  # Marca como mostrado
+                        self.speak("¡Acceso permitido, abriendo puerta!")  # Reproduce el texto en voz
                         messagebox.showinfo("Control de Acceso", "¡Acceso permitido, Abriendo puerta!")
                         self.login_video.after(2000, self.close_login)
                     elif user_access is False and not self.message_shown:  # Verifica si el mensaje ya fue mostrado
                         self.message_shown = True  # Marca como mostrado
+                        self.speak("¡Acceso denegado, rostro no registrado!")  # Reproduce el texto en voz
                         messagebox.showinfo("Control de Acceso", "¡Acceso denegado, rostro no registrado!")
                         self.login_video.after(2000, self.close_login)
                     # AGREGADO POR VICTOR PARA MOSTRAR VENTANA EMERGENTE SI-----BORRAR CUANDO HAYA PUERTA
@@ -151,7 +163,21 @@ class GraphicalUserInterface:
         #SE CREA UNA NUEVA VENTANA
         self.face_login_window = Toplevel()
         self.face_login_window.title('Inicio de Sesión')
-        self.face_login_window.geometry('1280x720')
+        #self.face_login_window.geometry('1280x720')
+        # Establecer el tamaño de la ventana de acceso facial
+        window_width = 1280
+        window_height = 720
+        self.face_login_window.geometry(f"{window_width}x{window_height}")
+        # Obtener el tamaño de la pantalla
+        screen_width = self.face_login_window.winfo_screenwidth()
+        screen_height = self.face_login_window.winfo_screenheight()
+
+        # Calcular las coordenadas para centrar la ventana
+        center_x = (screen_width - window_width) // 2
+        center_y = (screen_height - window_height) // 2
+
+        # Establecer la posición centrada
+        self.face_login_window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
         self.login_video = Label(self.face_login_window)
         self.login_video.place(x=0, y=0)
@@ -187,8 +213,8 @@ class GraphicalUserInterface:
 
                 if save_image:
                     self.signup_video.after(3000, self.close_signup)
-                else:
-                    self.signup_video.after(3000, self.close_signup)
+                #else:
+                    #self.signup_video.after(3000, self.close_signup)#================BORRO EL VID 5
 
 
         else:
@@ -200,7 +226,9 @@ class GraphicalUserInterface:
         self.name, self.user_code = self.input_name.get(), self.input_user_code.get()
         #checkeo de datos , no debe aver datos vacios
         if len(self.name) ==0 or len(self.user_code) == 0:
-            print('Formulario incompleto')
+            #print('Formulario incompleto')
+            messagebox.showinfo("Registro de Usuario", "¡No se permiten datos en blanco!")
+            self.signup_window.destroy()
         else:
 
             # VERIFICAR SI EL USUARIO YA ESTA REGISTRADO
@@ -223,6 +251,7 @@ class GraphicalUserInterface:
                     self.name, self.user_code, registration_date
                 )
                 self.conn.commit()
+
 
                 # Guardar la información en un archivo de texto (como en tu código original)
                 file = open(f"{self.database.users}/{self.user_code}.txt", 'w')
@@ -258,7 +287,20 @@ class GraphicalUserInterface:
         #Ventana de registro
         self.signup_window = Toplevel(self.frame)
         self.signup_window.title("Registro Facial")
-        self.signup_window.geometry("1280x720")
+        #self.signup_window.geometry("1280x720")
+        # Establecer el tamaño de la ventana registro
+        window_width = 1280
+        window_height = 720
+        self.signup_window.geometry(f"{window_width}x{window_height}")
+        # Obtener el tamaño de la pantalla
+        screen_width = self.signup_window.winfo_screenwidth()
+        screen_height = self.signup_window.winfo_screenheight()
+        # Calcular las coordenadas para centrar la ventana
+        center_x = (screen_width - window_width) // 2
+        center_y = (screen_height - window_height) // 2
+        # Establecer la posición centrada
+        self.signup_window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
         # background
         background_signup_img = PhotoImage(file=self.images.gui_signup_img)
         background_signup =Label(self.signup_window, image=background_signup_img)

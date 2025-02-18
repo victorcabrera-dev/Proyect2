@@ -17,12 +17,12 @@ class FaceLogIn:
         # step 1: check face detection
         check_face_detect, face_info, face_save = self.face_utilities.check_face(face_image)
         if check_face_detect is False:
-            return face_image, self.matcher, '¡No face detected!'
+            return face_image, self.matcher, '¡Rostro no detectado!'
 
         # step 2: face mesh
         check_face_mesh, face_mesh_info = self.face_utilities.face_mesh(face_image)
         if check_face_mesh is False:
-            return face_image, self.matcher, '¡No face mesh detected!'
+            return face_image, self.matcher, '¡Malla facial no detectado!'
 
         # step 3: extract face mesh
         face_mesh_points_list = self.face_utilities.extract_face_mesh(face_image, face_mesh_info)

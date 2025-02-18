@@ -8,7 +8,7 @@ class FaceDetectMediapipe:
     def __init__(self):
         # mediapipe
         self.object_face_mp = mp.solutions.face_detection
-        self.face_detector_mp = self.object_face_mp.FaceDetection(min_detection_confidence=0.7, model_selection=1)
+        self.face_detector_mp = self.object_face_mp.FaceDetection(min_detection_confidence=0.7, model_selection=1) #1 LARGO ALCANCE Y 0 CORTO ALCANCE
         self.bbox = []
         self.face_points = []
 

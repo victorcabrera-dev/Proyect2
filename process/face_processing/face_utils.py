@@ -16,6 +16,23 @@ from process.face_processing.face_matcher_models.face_matcher import FaceMatcher
 class FaceUtils:
     def __init__(self):
 
+
+        try:
+            # Conectar a la base de datos SQL Server
+            self.conn = pyodbc.connect(
+                'DRIVER={ODBC Driver 17 for SQL Server};'
+                'SERVER=DESKTOP-Q1T957H;'
+                'DATABASE=ControlAcceso;'
+                'UID=sa;'
+                'PWD=123'
+            )
+            self.cursor = self.conn.cursor()
+            print("Conexión establecida con la base de datos.")
+        except Exception as e:
+            print(f"Error al conectar a la base de datos: {e}")
+            self.conn = None  # Asegúrate de que self.conn sea None si ocurre un error
+        #=========================================================================================
+
         self.face_detector = FaceDetectMediapipe()
         # face mesh
         self.mesh_detector = FaceMeshMediapipe()
@@ -29,6 +46,7 @@ class FaceUtils:
         self.distance: float = 0.0
         self.matching: bool = False
         self.user_registered = False
+        self.user_registered = False #================SQL server
 
 
         # detect
@@ -65,7 +83,7 @@ class FaceUtils:
         h, w, _ = face_image.shape
         offset_x, offset_y = int(w * 0.025), int(h * 0.025)
         xi, yi, xf, yf = face_bbox
-        xi, yi, xf, yf = xi - offset_x, yi - offset_y, xf + offset_x, yf
+        xi, yi, xf, yf = xi - offset_x, yi - (offset_y*4), xf + offset_x, yf  # Se agrego * 4 al offset para capturar mas el rostro=====================================
         return face_image[yi:yf, xi:xf]
 
     # save
@@ -176,15 +194,61 @@ class FaceUtils:
     def face_matching(self, current_face:np.ndarray, face_db: List[np.ndarray], name_db: List[str]) -> Tuple[bool, str]:
         user_name: str = ''
         current_face = cv2.cvtColor(current_face, cv2.COLOR_RGB2BGR)
+        threshold = 0.5  # Ajusta este valor según tu necesidad ========================================================fecha 13.02.25
         for idx, face_img in enumerate(face_db):
             self.matching, self.distance = self.face_matcher.face_matching_arcface_model(current_face, face_img)
-            print(f'validando rostro con : {name_db[idx]}')
-            if self.matching:
+            print(f'validando rostro con : {name_db[idx]} ,distancia: {self.distance}')#================================agrego distancia fecha 13.02.25
+            print(f'matching: {self.matching} distance: {self.distance}') #==================== SACAR SI OCURRE ERROR
+            if self.distance < threshold: #=============================================================================Ajustar la distancia según el umbral. fecha  13.02.25
+                self.matching=True
                 user_name = name_db[idx]
                 return self.matching, user_name
         return False, 'Rostro no encontrado'
 
-    #guardando information TXT
+    def user_check_in(self, user_name: str, user_path: str):
+        if not self.user_registered:
+            now = datetime.datetime.now()
+            date_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            user_file_path = os.path.join(user_path, f"{user_name}.txt")
+
+            # Guardar el ingreso en un archivo de texto
+            with open(user_file_path, "a") as user_file:
+                user_file.write(f'\nIngreso: {date_time}\n')
+
+            # Obtener el ID del usuario desde la base de datos
+            if self.conn is None:
+                print("Error: No se pudo establecer la conexión a la base de datos.")
+                return
+
+            # Consulta para obtener el ID del usuario por su nombre
+            sql_query = "SELECT ID_usuario FROM Usuario WHERE codigo_usuario = ?"
+            self.cursor.execute(sql_query, (user_name,))
+            result = self.cursor.fetchone()
+
+            if result:
+                user_id = result[0]  # Asignamos el ID del usuario
+            else:
+                print(f"Usuario {user_name} no encontrado en la base de datos.")
+                return  # Si no encontramos el usuario, salimos de la función
+
+            # Registrar la entrada en la tabla "registro"
+            sql_insert = """
+                INSERT INTO registro (ID_usuario, codigo_usuario, fecha_entrada)
+                VALUES (?, ?, ?)
+            """
+            file_path = f"{user_path}/{user_name}.txt"  # Ruta del archivo del usuario
+            self.cursor.execute(sql_insert, (user_id, user_name, date_time))
+
+            # Confirmar los cambios en la base de datos
+            self.conn.commit()
+
+            # Marcar como registrado
+            self.user_registered = True
+            # Cerrar la conexión si ya no es necesaria (opcional)
+            # self.cursor.close()
+
+            print("Usuario registrado exitosamente en la base de datos.")
+    '''
     def user_check_in(self, user_name: str, user_path: str):
         if not self.user_registered:
             now = datetime.datetime.now()
@@ -194,6 +258,8 @@ class FaceUtils:
                 user_file.write(f'\nIngreso: {date_time}\n')
 
             self.user_registered = True
+        '''
+
 
 
 
